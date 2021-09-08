@@ -27,7 +27,7 @@ abstract class NoemFrameworkTestCase extends MockeryTestCase
         bootstrap(...$providers)(function (Container $c, Invoker $i) {
             $this->container = $c;
             $this->invoker = $i;
-        });
+        })();
         parent::setUp();
     }
 
