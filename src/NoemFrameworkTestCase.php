@@ -14,14 +14,17 @@ use function Noem\Framework\bootstrap;
 
 abstract class NoemFrameworkTestCase extends MockeryTestCase
 {
+
     private Container $container;
+
     private Invoker $invoker;
 
     public function setUp(): void
     {
         $classLoaderRef = new \ReflectionClass(ClassLoader::class);
         $vendorDir = dirname($classLoaderRef->getFileName(), 2);
-        $providers = require $vendorDir . '/noem.php';
+        $providers = require $vendorDir.'/noem.php';
+        $providers = array_filter($providers, [$this, 'acceptProvider'], ARRAY_FILTER_USE_KEY);
         assert(is_array($providers));
         $providers['noem/integration-test'] = new ServiceProvider($this->getFactories(), $this->getExtensions());
         bootstrap(...$providers)(function (Container $c, Invoker $i) {
@@ -31,9 +34,9 @@ abstract class NoemFrameworkTestCase extends MockeryTestCase
         parent::setUp();
     }
 
-    protected abstract function getFactories(): array;
+    abstract protected function getFactories(): array;
 
-    protected abstract function getExtensions(): array;
+    abstract protected function getExtensions(): array;
 
     /**
      * @return Invoker
@@ -49,5 +52,10 @@ abstract class NoemFrameworkTestCase extends MockeryTestCase
     protected function getContainer(): Container
     {
         return $this->container;
+    }
+
+    protected function acceptProvider(string $name): bool
+    {
+        return true;
     }
 }
